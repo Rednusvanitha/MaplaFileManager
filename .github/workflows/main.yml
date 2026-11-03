@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,6 +19,31 @@ jobs:
           test -n "$ZIP"
           mkdir source
           unzip -q "$ZIP" -d source
+
+      - name: Align Java and Kotlin targets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("source/app/build.gradle.kts")
+          s = p.read_text()
+
+          if "android {" not in s:
+              raise SystemExit("Android configuration not found")
+
+          addition = """android {
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+          """
+
+          s = s.replace("android {", addition, 1)
+          p.write_text(s)
+          PY
 
       - name: Set up Java
         uses: actions/setup-java@v4
