@@ -25,7 +25,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          p = Path("source/MaplaFileManager-New/app/build.gradle.kts") 
+          p = Path("source/app/build.gradle.kts") 
           s = p.read_text()
 
           if "android {" not in s:
@@ -62,10 +62,10 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build APK
-        run: gradle -p source/MaplaFileManager-New --no-daemon assembleDebug 
+        run: gradle -p source --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Mapla-File-Manager-APK
-          path: source/MaplaFileManager-New/app/build/outputs/apk/debug/app-debug.apk 
+          path: source/app/build/outputs/apk/debug/app-debug.apk
